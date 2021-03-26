@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class MyCollection<E> implements Collection<E> {
 
@@ -40,9 +43,8 @@ public class MyCollection<E> implements Collection<E> {
     /***/
     @Override
     public boolean contains(final Object o) {
-
         for (int i = 0; i < size; i++) {
-            if (elementData[i].equals(o)) {
+            if ((elementData[i] == null && o == null) || (elementData[i] != null && elementData[i].equals(o))) {
                 return true;
             }
         }
@@ -52,20 +54,28 @@ public class MyCollection<E> implements Collection<E> {
     /***/
     @Override
     public Object[] toArray() {
-        return elementData;
+        Object[] objects = new Object[size];
+        if (size >= 0) {
+            System.arraycopy(elementData, 0, objects, 0, size);
+        }
+        return objects;
     }
 
     /***/
     @Override
     public <T> T[] toArray(final T[] a) {
-        return (T[]) elementData;
+        T[] arr = (T[]) new Object[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = (T) elementData[i];
+        }
+        return arr;
     }
 
     /***/
     @Override
     public boolean remove(final Object o) {
         for (int i = 0; i < size; i++) {
-            if (elementData[i].equals(elementData)) {
+            if ((elementData[i] == null && o == null) || (elementData[i] != null && elementData[i].equals(o))) {
                 return removeAt(i);
             }
         }
@@ -73,7 +83,9 @@ public class MyCollection<E> implements Collection<E> {
     }
 
     private boolean removeAt(final int index) {
-        if (size - 1 - index >= 0) System.arraycopy(elementData, index + 1, elementData, index, size - 1 - index);
+        if (size - 1 - index >= 0) {
+            System.arraycopy(elementData, index + 1, elementData, index, size - 1 - index);
+        }
         size--;
         return true;
     }
@@ -83,10 +95,10 @@ public class MyCollection<E> implements Collection<E> {
     public boolean containsAll(final Collection<?> c) {
         boolean flag = false;
         Object[] crr = c.toArray();
-
         for (Object o : crr) {
+            flag = false;
             for (int j = 0; j < size; j++) {
-                if (elementData[j].equals(o)) {
+                if ((elementData[j] == null && o == null) || (elementData[j] != null && elementData[j].equals(o))) {
                     flag = true;
                     break;
                 }
@@ -119,8 +131,8 @@ public class MyCollection<E> implements Collection<E> {
         Object[] crr = c.toArray();
 
         for (Object o : crr) {
-            for (int j = 0; j < size; j++) {
-                if (elementData[j].equals(o)) {
+            for (int j = size - 1; j >= 0; j--) {
+                if ((elementData[j] == null && o == null) || (elementData[j] != null && elementData[j].equals(o))) {
                     flag = removeAt(j);
                 }
             }
@@ -132,13 +144,13 @@ public class MyCollection<E> implements Collection<E> {
     @Override
     public boolean retainAll(final Collection<?> c) {
         boolean flag = false;
-        for (int i = 0; i < size; i++) {
+        for (int i = size - 1; i >= 0; i--) {
             if (!c.contains(elementData[i])) {
                 removeAt(i);
                 flag = true;
             }
         }
-        return false;
+        return flag;
     }
 
     /***/
